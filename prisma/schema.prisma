@@ -1,0 +1,42 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(uuid())
+  name        String?
+  email       String   @unique
+  password    String?
+  createdAt   DateTime @default(now())
+  supervisor  String?
+  tasks       String?
+  whatToTrack String?
+
+  ertables ErTable[]
+}
+
+// Event Recording
+model ErTable {
+  id        Int     @id @default(autoincrement())
+  name      String
+  authorId  String
+  author    User    @relation(fields: [authorId], references: [id])
+  tableType String
+  rows      ErRow[]
+}
+
+model ErRow {
+  id      Int     @id @default(autoincrement())
+  tableId Int
+  table   ErTable @relation(fields: [tableId], references: [id])
+  date    String?
+  total   Int?
+}
